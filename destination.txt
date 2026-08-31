@@ -1,5 +1,5 @@
-This is the source file.
+THIS IS THE SOURCE FILE.
 
-We are copying this file using Node.js streams.
+WE ARE COPYING THIS FILE USING NODE.JS STREAMS.
 
-The file will be read chunk by chunk and written to the destination file.
+THE FILE WILL BE READ CHUNK BY CHUNK AND WRITTEN TO THE DESTINATION FILE.
