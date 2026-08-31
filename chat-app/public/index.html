@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Simple Chat App</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 600px;
+        margin: 40px auto;
+        background: #f4f7fb;
+        color: #1f2937;
+      }
+      .box {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      }
+      h1 {
+        margin-top: 0;
+      }
+      ul {
+        list-style: none;
+        padding: 0;
+      }
+      li {
+        background: #eef6ff;
+        margin: 8px 0;
+        padding: 10px 12px;
+        border-radius: 8px;
+      }
+      form {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+      }
+      input {
+        flex: 1;
+        padding: 10px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+      }
+      button {
+        padding: 10px 16px;
+        border: none;
+        border-radius: 8px;
+        background: #2563eb;
+        color: white;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="box">
+      <h1>Simple Chat App</h1>
+      <ul id="messages"></ul>
+
+      <form id="chatForm">
+        <input id="name" type="text" placeholder="Your name" required />
+        <input id="message" type="text" placeholder="Type a message" required />
+        <button type="submit">Send</button>
+      </form>
+    </div>
+
+    <script>
+      async function loadMessages() {
+        const response = await fetch('/messages');
+        const data = await response.json();
+        const list = document.getElementById('messages');
+        list.innerHTML = '';
+
+        data.forEach((msg) => {
+          const item = document.createElement('li');
+          item.textContent = msg.name + ': ' + msg.text;
+          list.appendChild(item);
+        });
+      }
+
+      document.getElementById('chatForm').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const name = document.getElementById('name').value;
+        const text = document.getElementById('message').value;
+
+        await fetch('/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, text })
+        });
+
+        document.getElementById('message').value = '';
+        loadMessages();
+      });
+
+      setInterval(loadMessages, 5000);
+      loadMessages();
+    </script>
+  </body>
+</html>
