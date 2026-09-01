@@ -6,20 +6,11 @@ app.use(express.json());
 
 let movies = JSON.parse(fs.readFileSync("./data/movies.json", "utf8"));
 
-app.get("/", (req, res) => {
-  res.status(200).send("Hello from Express!");
-});
+const getAllMovies = (req, res) => {
+  res.status(200).json({ status: "success", data: { movies } });
+};
 
-app.get("/users", (req, res) => {
-  res.status(200).json({ message: "Getting all users", status: "success" });
-});
-
-//Get - api/movies
-app.get("/api/v1/movies", (req, res) => {
-  res.status(200).json({ status: "success", data: { movies: movies } });
-});
-
-app.get("/api/v1/movies/:id", (req, res) => {
+const getMovieById = (req, res) => {
   const movieId = Number(req.params.id);
   const movie = movies.find((m) => m && m.id === movieId);
 
@@ -28,19 +19,17 @@ app.get("/api/v1/movies/:id", (req, res) => {
   }
 
   res.status(200).json({ status: "success", data: { movie } });
-});
+};
 
-//Post - api/movies
-app.post("/api/v1/movies", (req, res) => {
-  console.log(req.body);
+const createMovie = (req, res) => {
   const newMovie = req.body;
   movies.push(newMovie);
   fs.writeFileSync("./data/movies.json", JSON.stringify(movies));
+
   res.status(201).json({ status: "success", data: { movie: newMovie } });
-});
+};
 
-//PUT
-app.put("/api/v1/movies/:id", (req, res) => {
+const updateMovie = (req, res) => {
   const movieId = Number(req.params.id);
   const movieIndex = movies.findIndex((m) => m && m.id === movieId);
 
@@ -53,10 +42,9 @@ app.put("/api/v1/movies/:id", (req, res) => {
   fs.writeFileSync("./data/movies.json", JSON.stringify(movies));
 
   res.status(200).json({ status: "success", data: { movie: updatedMovie } });
-});
+};
 
-//Patch
-app.patch("/api/v1/movies/:id", (req, res) => {
+const patchMovie = (req, res) => {
   const movieId = Number(req.params.id);
   const movieIndex = movies.findIndex((m) => m && m.id === movieId);
 
@@ -69,10 +57,9 @@ app.patch("/api/v1/movies/:id", (req, res) => {
   fs.writeFileSync("./data/movies.json", JSON.stringify(movies));
 
   res.status(200).json({ status: "success", data: { movie: updatedMovie } });
-});
+};
 
-//Delete
-app.delete("/api/v1/movies/:id", (req, res) => {
+const deleteMovie = (req, res) => {
   const movieId = Number(req.params.id);
   const movieIndex = movies.findIndex((m) => m && m.id === movieId);
 
@@ -84,9 +71,33 @@ app.delete("/api/v1/movies/:id", (req, res) => {
   fs.writeFileSync("./data/movies.json", JSON.stringify(movies));
 
   res.status(204).json({ status: "success", data: null });
+};
+
+app.get("/", (req, res) => {
+  res.status(200).send("Hello from Express!");
 });
 
-//create a server
+app.get("/users", (req, res) => {
+  res.status(200).json({ message: "Getting all users", status: "success" });
+});
+
+app.get("/api/v1/movies", getAllMovies);
+app.get("/api/v1/movies/:id", getMovieById);
+app.post("/api/v1/movies", createMovie);
+app.put("/api/v1/movies/:id", updateMovie);
+app.patch("/api/v1/movies/:id", patchMovie);
+app.delete("/api/v1/movies/:id", deleteMovie);
+
+app.route("/api/v1/movies")
+  .get(getAllMovies)
+  .post(createMovie);
+
+app.route("/api/v1/movies/:id")
+  .get(getMovieById)
+  .put(updateMovie)
+  .patch(patchMovie)
+  .delete(deleteMovie);
+
 const port = 3200;
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
