@@ -3,14 +3,16 @@ const moviesRouter = require("./routes/moviesRouter");
 const userRouter = require("./routes/userRouter");
 const logger = require("./middleware/logger");
 const morgan = require("morgan");
+require("dotenv").config();
 
 
 const app = express();
-const port = process.env.PORT || 3200;
+const port = process.env.PORT || 3400;
 
 app.use(logger);
 app.use(morgan("dev"));
 app.use(express.json());
+app.use(express.static("./public"));
 
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/movies", moviesRouter);
